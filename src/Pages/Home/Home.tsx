@@ -5,6 +5,7 @@ import Stack from '@mui/material/Stack';
 import IconButton from '@mui/material/IconButton';
 import PhotoCamera from '@mui/icons-material/Search';
 import classes from './Home.module.css';
+import { UITable } from '../../components';
 
 const Home:React.FC = () => {
   const [currency, setCurrency] = useState('');
@@ -16,6 +17,23 @@ const Home:React.FC = () => {
     console.log('clicked!');
   };
   // TODO api call get available assets, populate form, autocomplete
+  // TODO: merge into master
+
+  // TODO: redux
+  // TODO: available pairs
+  // TODO: table view
+  // TODO: details view
+  // TODO: sockets
+
+  const info = {
+    binance: { price: 40000.20 },
+    bitfinex: { price: 41000.20 },
+    Huobi: { price: 40003.20 },
+    Kraken: { price: 40050.20 },
+  };
+
+  console.log({ info });
+
   return (
     <div className={classes.wrapper}>
       {/* App title component */}
@@ -38,6 +56,8 @@ const Home:React.FC = () => {
           <PhotoCamera />
         </IconButton>
       </Stack>
+
+      <UITable />
     </div>
   );
 };

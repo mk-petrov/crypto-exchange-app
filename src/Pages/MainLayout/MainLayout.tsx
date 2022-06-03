@@ -8,13 +8,13 @@ const MainLayout: React.FC = (): JSX.Element => (
     <div
       className={classes.overlay}
       style={{
-        backgroundImage: `url(${`${process.env.PUBLIC_URL}/assets/images/crypto.png`})`,
+        backgroundImage: `url(${`${process.env.PUBLIC_URL}/assets/images/crypto2.jpeg`})`,
         backgroundRepeat: 'no-repeat',
         backgroundSize: 'cover',
       }}
     />
     <div
-      className={classes.overlay}
+      className={[classes.overlay, classes.blur].join(' ')}
       style={{
         backgroundColor: '#000',
         opacity: 0.9,

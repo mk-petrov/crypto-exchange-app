@@ -11,31 +11,8 @@ import TableSortLabel from '@mui/material/TableSortLabel';
 import Paper from '@mui/material/Paper';
 import Checkbox from '@mui/material/Checkbox';
 import { visuallyHidden } from '@mui/utils';
-
-interface IAsset {
-    // name: string;
-    price: string;
-    exchange: string;
-}
-
-function createData(
-    // name: string,
-    price: string,
-    exchange: string,
-    ): IAsset {
-    return {
-        // name,
-        price,
-        exchange,
-    };
-}
-
-const rows = [
-    createData('1 BTC = 3001.23 {curr}', 'Binance1'),
-    createData('The pair is not supported', 'Binance2'),
-    createData('1 BTC = 3002.23 {curr}', 'Binance3'),
-    createData('1 BTC = 3003.23 {curr}', 'Binance4'),
-];
+import { IAsset } from '../interfaces/Asset'
+import { HeadCell, EnhancedTableProps, Order } from '../interfaces/Table'
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
     if (b[orderBy] < a[orderBy]) {
@@ -46,8 +23,6 @@ function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
     }
     return 0;
 }
-
-type Order = 'asc' | 'desc';
 
 function getComparator<Key extends keyof any>(
     order: Order,
@@ -75,14 +50,6 @@ function stableSort<T>(array: readonly T[], comparator: (a: T, b: T) => number) 
     return stabilizedThis.map((el) => el[0]);
 }
 
-interface HeadCell {
-    disablePadding: boolean;
-    id: keyof IAsset;
-    label: string;
-    numeric: boolean;
-    align: 'left' | 'right';
-}
-
 const headCells: readonly HeadCell[] = [
     {
         id: 'exchange',
@@ -99,15 +66,6 @@ const headCells: readonly HeadCell[] = [
         align: 'right'
     },
 ];
-
-interface EnhancedTableProps {
-    numSelected: number;
-    onRequestSort: (event: React.MouseEvent<unknown>, property: keyof IAsset) => void;
-    onSelectAllClick?: (event: React.ChangeEvent<HTMLInputElement>) => void;
-    order: Order;
-    orderBy: string;
-    rowCount: number;
-}
 
 const EnhancedTableHead = (props: EnhancedTableProps) => {
     const { order, orderBy, onRequestSort } = props;
@@ -145,7 +103,11 @@ const EnhancedTableHead = (props: EnhancedTableProps) => {
     );
 };
 
-export default function EnhancedTable() {
+interface IProps {
+    rows: Array<IAsset>
+}
+
+const EnhancedTable:React.FC<IProps> = ({ rows }) => {
     const [order, setOrder] = React.useState<Order>('asc');
     const [orderBy, setOrderBy] = React.useState<keyof IAsset>('price');
     const [selected, setSelected] = React.useState<readonly string[]>([]);
@@ -231,21 +193,6 @@ export default function EnhancedTable() {
                             key={row.exchange}
                             selected={isItemSelected}
                         >
-                            {/* <TableCell padding="checkbox">
-                                <Checkbox
-                                    color="primary"
-                                    checked={isItemSelected}
-                                    inputProps={{ 'aria-labelledby': labelId }}
-                                />
-                            </TableCell> */}
-                            {/* <TableCell
-                                component="th"
-                                id={labelId}
-                                scope="row"
-                                padding="none"
-                            >
-                                {row.name}
-                            </TableCell> */}
                             <TableCell align="left">{row.exchange}</TableCell>
                             <TableCell align="right">{row.price}</TableCell>
                         </TableRow>
@@ -258,3 +205,5 @@ export default function EnhancedTable() {
         </Box>
     );
 }
+
+export default EnhancedTable;

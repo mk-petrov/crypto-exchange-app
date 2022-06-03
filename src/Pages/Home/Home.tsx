@@ -1,11 +1,19 @@
 import React, { useState } from 'react';
 
-import TextField from '@mui/material/TextField';
-import Stack from '@mui/material/Stack';
-import IconButton from '@mui/material/IconButton';
-import PhotoCamera from '@mui/icons-material/Search';
 import classes from './Home.module.css';
-import { UITable } from '../../components';
+import { UITable, UISearch } from '../../components';
+import { IAsset } from '../../interfaces/Asset'
+
+function createData( price: string, exchange: string ): IAsset {
+  return { price, exchange };
+}
+
+const rows = [
+  createData('1 BTC = 3001.23 {curr}', 'Binance1'),
+  createData('The pair is not supported', 'Binance2'),
+  createData('1 BTC = 3002.23 {curr}', 'Binance3'),
+  createData('1 BTC = 3003.23 {curr}', 'Binance4'),
+];
 
 const Home:React.FC = () => {
   const [currency, setCurrency] = useState('');
@@ -18,6 +26,8 @@ const Home:React.FC = () => {
   };
   // TODO api call get available assets, populate form, autocomplete
   // TODO: merge into master
+
+  // TODO: %2F
 
   // TODO: redux
   // TODO: available pairs
@@ -41,24 +51,10 @@ const Home:React.FC = () => {
 
       {/* <button>Search</button> */}
       {/* TODO: search component */}
-      <Stack direction="row" alignItems="center" spacing={2}>
-        <TextField
-          fullWidth
-          focused
-          id="outlined-name"
-          label="Cryptocurrency"
-          value={currency}
-          onChange={onSearchChange}
-          type="search"
-          variant="standard"
-        />
-        <IconButton color="primary" aria-label="upload picture" component="span" onClick={onSearchClick}>
-          <PhotoCamera />
-        </IconButton>
-      </Stack>
+      <UISearch onClick={onSearchClick} onChange={onSearchChange} value={currency} />
 
       <div style={{ marginTop: 40 }} />
-      <UITable />
+      <UITable rows={rows} />
 
     </div>
   );

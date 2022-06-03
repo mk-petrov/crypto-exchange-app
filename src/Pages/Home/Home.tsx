@@ -57,7 +57,9 @@ const Home:React.FC = () => {
         </IconButton>
       </Stack>
 
+      <div style={{ marginTop: 40 }} />
       <UITable />
+
     </div>
   );
 };

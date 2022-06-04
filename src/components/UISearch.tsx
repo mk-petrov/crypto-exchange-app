@@ -4,16 +4,18 @@ import TextField from '@mui/material/TextField';
 import Stack from '@mui/material/Stack';
 import IconButton from '@mui/material/IconButton';
 import SearchIcon from '@mui/icons-material/Search';
+// import InputAdornment from "@material-ui/core/InputAdornment";
 
 interface IProps {
     value: string;
     onChange: (e: any) => void;
     onClick: () => void;
+    onClear?: (e: string) => void;
 }
 
 const ENTER_KEY = 13
 
-const UISearch:React.FC<IProps> = ({ value, onChange, onClick }) => {
+const UISearch:React.FC<IProps> = ({ value, onChange, onClick, onClear }) => {
 
     const handleKeyPress = (e: any) => {
         if (ENTER_KEY === e.keyCode) {
@@ -35,9 +37,13 @@ const UISearch:React.FC<IProps> = ({ value, onChange, onClick }) => {
                 type="search"
                 variant="standard"
             />
-            <IconButton color="primary" aria-label="upload picture" component="span" onClick={onClick}>
-                <SearchIcon />
-            </IconButton>
+            {
+                value?.length > 5 && (
+                    <IconButton color="primary" aria-label="upload picture" component="span" onClick={onClick}>
+                        <SearchIcon />
+                    </IconButton>
+                )
+            }
         </Stack>
     )
 }

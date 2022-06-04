@@ -161,7 +161,6 @@ const EnhancedTable:React.FC<IProps> = ({ rows }) => {
 
     return (
         <Box sx={{ width: '100%' }}>
-            {/*  "#1E1E1E" */}
         <Paper sx={{ width: '100%', mb: 2, backgroundColor: "rgba(246,161,12,0.8)", color: '#fff' }}>
             <TableContainer>
             <Table
@@ -187,12 +186,12 @@ const EnhancedTable:React.FC<IProps> = ({ rows }) => {
 
                     return (
                         <TableRow
+                            key={row.id}
                             hover
                             onClick={(event) => handleClick(event, row.exchange)}
                             role="checkbox"
                             aria-checked={isItemSelected}
                             tabIndex={-1}
-                            key={row.exchange}
                             selected={isItemSelected}
                         >
                             <TableCell align="left">{row.exchange}</TableCell>

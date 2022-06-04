@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 
 import TextField from '@mui/material/TextField';
 import Stack from '@mui/material/Stack';
@@ -7,18 +7,29 @@ import SearchIcon from '@mui/icons-material/Search';
 
 interface IProps {
     value: string;
-    onChange: (e: any) => void; // TODO: update the methods
+    onChange: (e: any) => void;
     onClick: () => void;
 }
 
+const ENTER_KEY = 13
+
 const UISearch:React.FC<IProps> = ({ value, onChange, onClick }) => {
+
+    const handleKeyPress = (e: any) => {
+        if (ENTER_KEY === e.keyCode) {
+            onClick();
+        }
+    }
+
     return (
         <Stack direction="row" alignItems="center" spacing={2}>
             <TextField
+                onKeyUp={handleKeyPress}
                 fullWidth
                 focused
                 id="outlined-name"
-                label="Cryptocurrency"
+                label=""
+                placeholder="Search for a cryptocurrency exchange pair"
                 value={value}
                 onChange={onChange}
                 type="search"

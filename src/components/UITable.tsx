@@ -11,7 +11,7 @@ import TableSortLabel from '@mui/material/TableSortLabel';
 import Paper from '@mui/material/Paper';
 import Checkbox from '@mui/material/Checkbox';
 import { visuallyHidden } from '@mui/utils';
-import { IAsset } from '../interfaces/Asset'
+// import { IAsset } from '../type'
 import { HeadCell, EnhancedTableProps, Order } from '../interfaces/Table'
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
@@ -108,6 +108,8 @@ interface IProps {
 }
 
 const EnhancedTable:React.FC<IProps> = ({ rows }) => {
+    if(!rows || Object.prototype.toString.call(rows) !== '[object Array]' || rows.length === 0) return null;
+
     const [order, setOrder] = React.useState<Order>('asc');
     const [orderBy, setOrderBy] = React.useState<keyof IAsset>('price');
     const [selected, setSelected] = React.useState<readonly string[]>([]);
@@ -163,7 +165,7 @@ const EnhancedTable:React.FC<IProps> = ({ rows }) => {
         <Paper sx={{ width: '100%', mb: 2, backgroundColor: "rgba(246,161,12,0.8)", color: '#fff' }}>
             <TableContainer>
             <Table
-                sx={{ minWidth: 350, padding: 40 }}
+                sx={{ width: 500, minWidth: 250, padding: 40 }}
                 aria-labelledby="tableTitle"
                 size="medium"
             >

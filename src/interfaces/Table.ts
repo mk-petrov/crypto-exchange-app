@@ -1,4 +1,4 @@
-import { IAsset } from './Asset'
+// import { IAsset } from '../type'
 
 export type Order = 'asc' | 'desc';
 

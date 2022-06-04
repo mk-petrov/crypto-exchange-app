@@ -18,4 +18,12 @@ type PairAction = {
   payload: IPair
 }
 
+type AssetAction = {
+  type: string;
+  payload: Array<IAsset>
+}
+
+type Action = PairAction | AssetAction
+
 type DispatchType = (args: PairAction) => PairAction
+type DispatchTypeAsset = (args: AssetAction) => AssetAction

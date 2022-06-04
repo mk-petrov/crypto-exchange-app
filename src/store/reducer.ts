@@ -6,7 +6,6 @@ const initialState: PairState = {
 }
 
 const reducer = ( state: PairState = initialState, action: Action ): PairState => {
-  console.log({ action }); // TODO remove
 
   switch (action.type) {
 

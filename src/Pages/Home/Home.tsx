@@ -1,60 +1,72 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { Dispatch } from "redux"
+import { useDispatch, useSelector, shallowEqual } from "react-redux"
+import { useParams } from 'react-router-dom';
 
 import classes from './Home.module.css';
 import { UITable, UISearch } from '../../components';
-import { IAsset } from '../../interfaces/Asset'
+import { setAssets, setPair } from '../../store/actionCreators';
+import { binanceApi } from '../../utils/api'
 
-function createData( price: string, exchange: string ): IAsset {
-  return { price, exchange };
-}
 
-const rows = [
-  createData('1 BTC = 3001.23 {curr}', 'Binance1'),
-  createData('The pair is not supported', 'Binance2'),
-  createData('1 BTC = 3002.23 {curr}', 'Binance3'),
-  createData('1 BTC = 3003.23 {curr}', 'Binance4'),
-];
+const apiCalls = [
+  binanceApi.getPrice
+]
+
+const mapper = (fns: Array<Function>, argument: string) => fns.map((fn: Function) => fn(argument))
 
 const Home:React.FC = () => {
+  // params
+  const { asset: urlPair } = useParams();
+
+  // state
   const [currency, setCurrency] = useState('');
+  // const [data, setData] = useState<any | null>(null);
+  const dispatch: Dispatch<any> = useDispatch()
+  const assets: Array<IAsset> = useSelector( (state: PairState) => state.assets, shallowEqual )
+  const { name: selectedPair } = useSelector((state: PairState) => state.pair)
+
+  useEffect(() => {
+    const makeApiCalls = async () => {
+      const dd = await Promise.all(mapper(apiCalls, selectedPair))
+      dispatch(setAssets(dd.flat().filter(x => !!x))) // // setData(dd.flat().filter(x => !!x))
+    }
+
+    // if we have url param as currency we set it in the store
+    if (urlPair && !selectedPair) {
+      const formattedString = urlPair.replace('%2F', '/')
+      dispatch(setPair({ name: formattedString }))
+    }
+
+    // make api calls if we have selected pair
+    if (selectedPair) {
+      makeApiCalls().catch(() => {});
+    }
+
+  }, [urlPair, selectedPair])
+
+  const onSearchClick = React.useCallback(
+    () => {
+      if (currency && currency.length > 5) {
+        dispatch(setPair({ name: currency }))
+      }
+    },
+    [ dispatch, currency ]
+  )
+
   const onSearchChange = (e: any) => {
-    setCurrency(e.target.value);
+    setCurrency(e?.target?.value);
   };
-
-  const onSearchClick = () => {
-    console.log('clicked!');
-  };
-  // TODO api call get available assets, populate form, autocomplete
-  // TODO: merge into master
-
-  // TODO: %2F
-
-  // TODO: redux
-  // TODO: available pairs
-  // TODO: table view
-  // TODO: details view
-  // TODO: sockets
-
-  const info = {
-    binance: { price: 40000.20 },
-    bitfinex: { price: 41000.20 },
-    Huobi: { price: 40003.20 },
-    Kraken: { price: 40050.20 },
-  };
-
-  console.log({ info });
 
   return (
     <div className={classes.wrapper}>
-      {/* App title component */}
       <div className={classes.title}>Crypto Exchange App</div>
 
-      {/* <button>Search</button> */}
-      {/* TODO: search component */}
-      <UISearch onClick={onSearchClick} onChange={onSearchChange} value={currency} />
+      <UISearch onClick={onSearchClick} onChange={onSearchChange} value={currency} onClear={onSearchChange} />
 
       <div style={{ marginTop: 40 }} />
-      <UITable rows={rows} />
+
+      <UITable rows={assets} />
 
     </div>
   );

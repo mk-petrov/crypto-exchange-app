@@ -1,0 +1,1 @@
+export const PAIR_NOT_SUPPORTED = 'The pair is not supported'

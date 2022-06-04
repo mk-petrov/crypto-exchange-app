@@ -11,7 +11,7 @@ import TableSortLabel from '@mui/material/TableSortLabel';
 import Paper from '@mui/material/Paper';
 import Checkbox from '@mui/material/Checkbox';
 import { visuallyHidden } from '@mui/utils';
-// import { IAsset } from '../type'
+import { PAIR_NOT_SUPPORTED } from '../config/constants'
 import { HeadCell, EnhancedTableProps, Order } from '../interfaces/Table'
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
@@ -104,10 +104,11 @@ const EnhancedTableHead = (props: EnhancedTableProps) => {
 };
 
 interface IProps {
-    rows: Array<IAsset>
+    rows: Array<IAsset>;
+    onRowClick?: (exchange: string) => void;
 }
 
-const EnhancedTable:React.FC<IProps> = ({ rows }) => {
+const EnhancedTable:React.FC<IProps> = ({ rows, onRowClick }) => {
     if(!rows || Object.prototype.toString.call(rows) !== '[object Array]' || rows.length === 0) return null;
 
     const [order, setOrder] = React.useState<Order>('asc');
@@ -125,24 +126,10 @@ const EnhancedTable:React.FC<IProps> = ({ rows }) => {
         setOrderBy(property);
     };
 
-    const handleClick = (event: React.MouseEvent<unknown>, name: string) => {
-        const selectedIndex = selected.indexOf(name);
-        let newSelected: readonly string[] = [];
-
-        if (selectedIndex === -1) {
-        newSelected = newSelected.concat(selected, name);
-        } else if (selectedIndex === 0) {
-        newSelected = newSelected.concat(selected.slice(1));
-        } else if (selectedIndex === selected.length - 1) {
-        newSelected = newSelected.concat(selected.slice(0, -1));
-        } else if (selectedIndex > 0) {
-        newSelected = newSelected.concat(
-            selected.slice(0, selectedIndex),
-            selected.slice(selectedIndex + 1),
-        );
+    const handleClick = (name: string, price: string) => {
+        if (typeof onRowClick === 'function' && PAIR_NOT_SUPPORTED !== price) {
+            onRowClick(name)
         }
-
-        setSelected(newSelected);
     };
 
     const handleChangePage = (event: unknown, newPage: number) => {
@@ -187,12 +174,13 @@ const EnhancedTable:React.FC<IProps> = ({ rows }) => {
                     return (
                         <TableRow
                             key={row.id}
-                            hover
-                            onClick={(event) => handleClick(event, row.exchange)}
+                            hover={PAIR_NOT_SUPPORTED !== row.price}
+                            onClick={(event) => handleClick(row.exchange, row.price)}
                             role="checkbox"
                             aria-checked={isItemSelected}
                             tabIndex={-1}
                             selected={isItemSelected}
+                            sx={{ cursor: PAIR_NOT_SUPPORTED !== row.price ? 'pointer' : 'default' }}
                         >
                             <TableCell align="left">{row.exchange}</TableCell>
                             <TableCell align="right">{row.price}</TableCell>

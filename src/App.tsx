@@ -15,7 +15,7 @@ const App: React.FC = (): JSX.Element => {
       { path: '/', element: <Home /> },
       { path: '404', element: <NotFound /> },
       { path: ':asset', element: <Home /> }, // <Asset />
-      { path: ':asset/details', element: <AssetDetails /> },
+      { path: ':asset/details', element: <Home /> }, //  <AssetDetails /> 
     ],
   };
 

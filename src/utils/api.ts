@@ -1,5 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { formatPrice } from './helpers';
+import { PAIR_NOT_SUPPORTED } from '../config/constants';
 
 export const binanceApi = {
   getPrice: async (pair: string):Promise<IAsset | null> => {
@@ -67,7 +68,7 @@ export const bitfinexApi = {
 
 export const krakenApi = {
   getPrice: async (pair: string):Promise<IAsset | null> => {
-    let price = 'The pair is not supported'
+    let price = PAIR_NOT_SUPPORTED
     try {
       const [ firstCurrency = '', secondCurrency = '' ] = pair.split('/')
       const formatPair = pair.toLocaleUpperCase().replace('/', '')

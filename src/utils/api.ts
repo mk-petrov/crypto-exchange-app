@@ -1,10 +1,10 @@
 import { v4 as uuidv4 } from 'uuid';
 import { formatPrice } from './helpers';
-import { PAIR_NOT_SUPPORTED } from '../config/constants';
+import { PAIR_NOT_SUPPORTED, PAIR_LAST_TRADES } from '../config/constants';
 
 export const binanceApi = {
   getPrice: async (pair: string):Promise<IAsset | null> => {
-    let price = 'The pair is not supported'
+    let price = PAIR_NOT_SUPPORTED
     try {
       const [ firstCurrency = '', secondCurrency = '' ] = pair.split('/')
       const formatPair = pair.toLocaleUpperCase().replace('/', 'B')
@@ -25,6 +25,7 @@ export const binanceApi = {
       price,
     };
   },
+  getDetails: () => {}
   // getDetails: async (pair: string):Promise => {
   //   try {
   //     const response = await fetch(`https://api.binance.com'/api/v3/trades?symbol=${pair}&limit=10`);
@@ -44,7 +45,7 @@ export const binanceApi = {
 
 export const bitfinexApi = {
   getPrice: async (pair: string):Promise<IAsset | null> => {
-    let price = 'The pair is not supported'
+    let price = PAIR_NOT_SUPPORTED
     try {
       const [ firstCurrency = '', secondCurrency = '' ] = pair.split('/')
       const formatPair = pair.toLocaleUpperCase().replace('/', '')
@@ -64,6 +65,7 @@ export const bitfinexApi = {
       price,
     };
   },
+  getDetails: () => {}
 }
 
 export const krakenApi = {
@@ -92,11 +94,12 @@ export const krakenApi = {
       price,
     };
   },
+  getDetails: () => {}
 }
 
 export const huobiApi = {
   getPrice: async (pair: string):Promise<IAsset | null> => {
-    let price = 'The pair is not supported'
+    let price = PAIR_NOT_SUPPORTED
     try {
       const [ firstCurrency = '', secondCurrency = '' ] = pair.split('/')
       const formatPair = pair.replace('/', '')
@@ -119,4 +122,34 @@ export const huobiApi = {
       price,
     };
   },
+  getDetails: async (pair: string) => {
+
+    let trades = []
+    try {
+      const [ firstCurrency = '', secondCurrency = '' ] = pair.split('/')
+      let formatPair = pair.replace('%2F', '')
+      formatPair = pair.replace('/', '')
+
+      const response = await fetch(`/market/history/trade?size=${PAIR_LAST_TRADES}&symbol=${formatPair}`);
+      const { data = [] } = await response.json();
+      if (data.length > 0) {
+        trades = data.reduce((acc: any, el: any) => {
+          const data = el?.data?.[0];
+
+          acc.push({
+            direction: data.direction,
+            amount: data.amount,
+            id: data.id,
+            price: data.price,
+            pair: pair,
+            dateTime: new Date(data.ts) //data.ts
+          });
+          return acc;
+        }, [])
+      }
+      
+    } catch (error) {}
+
+    return trades;
+  }
 }

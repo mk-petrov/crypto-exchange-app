@@ -1,21 +1,33 @@
 import React, { useEffect, useState } from 'react';
 import { Dispatch } from "redux"
 import { useDispatch, useSelector, shallowEqual } from "react-redux"
-import { useParams } from 'react-router-dom';
+import { useParams, useLocation } from 'react-router-dom';
 
 import classes from './Home.module.css';
 import { UITable, UISearch, UILoader, UIModal } from '../../components';
-import { setAssets, setPair } from '../../store/actionCreators';
+import { setAssets, setMarket, setPair } from '../../store/actionCreators';
 import { useNavigate } from 'react-router-dom';
 import { binanceApi, bitfinexApi, krakenApi, huobiApi } from '../../utils/api';
 
 
-const apiCalls = [
+const apiPriceCalls = [
   binanceApi.getPrice,
   bitfinexApi.getPrice,
   krakenApi.getPrice,
   huobiApi.getPrice
-]
+];
+
+type apiDetailsCalls = {
+  [key: string]: Function
+}
+
+const apiDetailsCalls: apiDetailsCalls = {
+  'BINANCE': binanceApi.getDetails,
+  'BITFINEX': bitfinexApi.getDetails,
+  'KRAKEN': krakenApi.getDetails,
+  'HoubiGlobal': huobiApi.getDetails
+}
+
 
 const mapper = (fns: Array<Function>, argument: string) => fns.map((fn: Function) => fn(argument))
 
@@ -23,26 +35,38 @@ const Home:React.FC = () => {
   // params
   const { asset: urlPair } = useParams();
   const navigate = useNavigate();
+  const { pathname } = useLocation();
+
+  // check for modal
+  const hasDetails = pathname.split('/').includes('details')
 
   // state
   const [ currency, setCurrency ] = useState('');
   const [ isLoading, setIsLoading ] = useState(false);
-  const [ isModalOpen, setIsModalOpen ] = useState(false);
-  // const [data, setData] = useState<any | null>(null);
-  const dispatch: Dispatch<any> = useDispatch()
-  const assets: Array<IAsset> = useSelector( (state: PairState) => state.assets, shallowEqual )
-  const { name: selectedPair } = useSelector((state: PairState) => state.pair)
+  const [ isModalOpen, setIsModalOpen ] = useState(hasDetails);
+  const [ data, setData ] = useState<any | null>(null);
+  const [ isInitialRender, setIsInitialRender ] = useState(true);
+  const dispatch: Dispatch<any> = useDispatch();
+  const assets: Array<IAsset> = useSelector( (state: PairState) => state.assets, shallowEqual );
+  const { pair, exchange } = useSelector((state: PairState) => state);
+  const { name: selectedPair } = pair;
 
+  // handle SEARCH changes
   useEffect(() => {
-    setIsLoading(true);
-
+    
     const makeApiCalls = async () => {
-      const responses = await Promise.all(mapper(apiCalls, selectedPair));
+
+      // if (isInitialRender) {
+      //   setIsLoading(true);
+      // }
+      const responses = await Promise.all(mapper(apiPriceCalls, selectedPair));
       dispatch(setAssets(responses.flat().filter(x => !!x))); // // setData(dd.flat().filter(x => !!x))
-      setIsLoading(false);
+      // setIsLoading(false);
+      // setIsInitialRender(false);
     }
 
     // if we have url param as currency we set it in the store
+
     if (urlPair && !selectedPair) {
       const formattedString = urlPair.replace('%2F', '/');
       setCurrency(formattedString);
@@ -61,19 +85,39 @@ const Home:React.FC = () => {
       if (selectedPair) {
         makeApiCalls().catch(() => {});
       }
-    }, 25 * 1000);
+    }, 5 * 1000);
+
+    // setIsLoading(false);
+    // setIsInitialRender(false);
 
     // cleanup
     return () => clearInterval(interval);
 
 
-  }, [urlPair, selectedPair])
+  }, [ urlPair, selectedPair ])
+
+
+  // handle MODAL changes
+  useEffect(() => {
+    const makeApiCalls = async () => {
+      const apiRequests =  exchange ? [ apiDetailsCalls[exchange] ] : Object.values(apiDetailsCalls);
+      const urlQueryPair = urlPair || ''
+      const responses = await Promise.all(mapper(apiRequests, urlQueryPair));
+      setData(responses.flat())
+    }
+
+    if (isModalOpen) {
+      makeApiCalls().catch(() => {});
+    }
+
+  }, [isModalOpen, exchange, selectedPair])
 
   const onSearchClick = React.useCallback(
     () => {
       if (currency && currency.length > 5) {
         dispatch(setPair({ name: currency }));
         navigate('/' + encodeURIComponent(currency));
+        setIsInitialRender(true);
       }
     },
     [ dispatch, currency ]
@@ -84,16 +128,22 @@ const Home:React.FC = () => {
   };
 
   const onModalToggle = (bool = false) => {
-    setIsModalOpen(bool)
+    if (!bool) {
+      // we change the url if the modal is closed
+      const path = pathname.split('/').filter(p => p !== 'details')
+      navigate(path.join('/'))
+    }
+    setIsModalOpen(bool);
   }
 
   const onRowClick = (exchange: string) => {
-    onModalToggle(true)
-    // set url /details
+    onModalToggle(true);
 
-    // onRowClick - set exchange
-    // set url /detail/exchange - for a single
-    // fetch data
+    navigate(`${pathname}/details`);
+
+    dispatch(setMarket(exchange))
+
+    // table that will show the data
   }
 
   return (
@@ -106,7 +156,9 @@ const Home:React.FC = () => {
 
       { isLoading ? <UILoader /> : <UITable rows={assets} onRowClick={onRowClick} /> }
 
-      <UIModal isOpen={isModalOpen} onClose={onModalToggle} />
+      <UIModal isOpen={isModalOpen} onClose={onModalToggle}>
+        <UITable rows={assets} onRowClick={onRowClick} />
+      </UIModal>
 
     </div>
   );

@@ -3,8 +3,9 @@ import React from 'react';
 import { Navigate, useRoutes } from 'react-router-dom';
 
 import {
-  Home, Asset, AssetDetails, MainLayout, NotFound,
+  Home, MainLayout, NotFound,
 } from './Pages';
+
 
 const App: React.FC = (): JSX.Element => {
   const mainRoutes = {

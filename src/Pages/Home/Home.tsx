@@ -140,17 +140,14 @@ const Home:React.FC = () => {
 
   const onRowClick = (exchange: string) => {
     onModalToggle(true);
-
     navigate(`${pathname}/details`);
-
-    dispatch(setMarket(exchange))
-
-    // table that will show the data
+    dispatch(setMarket(exchange));
   }
 
   const onOpenDetailsBtnClick = () => {
-    dispatch(setMarket(''))
-    onModalToggle(true)
+    dispatch(setMarket(''));
+    navigate(`${pathname}/details`);
+    onModalToggle(true);
   }
 
   return (
@@ -175,7 +172,7 @@ const Home:React.FC = () => {
       ) }
 
       <UIModal isOpen={isModalOpen} onClose={onModalToggle}>
-        { data && data.length > 0 && (<UITableDetails rows={data} />) }
+        { data && data.length > 0 ? (<UITableDetails rows={data} />) : (<div style={{ color: '#fff', textAlign: 'center' }}>Invalid Currency Pair</div>) }
       </UIModal>
 
     </div>

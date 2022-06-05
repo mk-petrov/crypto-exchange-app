@@ -10,7 +10,8 @@ interface IAsset {
 
 type PairState = {
   pair: IPair;
-  assets: Array<IAsset>
+  assets: Array<IAsset>;
+  exchange: string;
 }
 
 type PairAction = {
@@ -23,7 +24,13 @@ type AssetAction = {
   payload: Array<IAsset>
 }
 
-type Action = PairAction | AssetAction
+type MarketAction = {
+  type: string;
+  payload: string;
+}
+
+type Action = PairAction | AssetAction | MarketAction
 
 type DispatchType = (args: PairAction) => PairAction
 type DispatchTypeAsset = (args: AssetAction) => AssetAction
+type DispatchTypeMarket = (args: MarketAction) => MarketAction

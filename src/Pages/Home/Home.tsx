@@ -4,10 +4,11 @@ import { useDispatch, useSelector, shallowEqual } from "react-redux"
 import { useParams, useLocation } from 'react-router-dom';
 
 import classes from './Home.module.css';
-import { UITable, UISearch, UILoader, UIModal } from '../../components';
+import { UITable, UISearch, UILoader, UIModal, UIButton } from '../../components';
 import { setAssets, setMarket, setPair } from '../../store/actionCreators';
 import { useNavigate } from 'react-router-dom';
 import { binanceApi, bitfinexApi, krakenApi, huobiApi } from '../../utils/api';
+import { REFRESH_MARKET_DATA } from '../../config/constants';
 
 
 const apiPriceCalls = [
@@ -85,7 +86,7 @@ const Home:React.FC = () => {
       if (selectedPair) {
         makeApiCalls().catch(() => {});
       }
-    }, 5 * 1000);
+    }, REFRESH_MARKET_DATA * 1000);
 
     // setIsLoading(false);
     // setIsInitialRender(false);
@@ -103,7 +104,9 @@ const Home:React.FC = () => {
       const apiRequests =  exchange ? [ apiDetailsCalls[exchange] ] : Object.values(apiDetailsCalls);
       const urlQueryPair = urlPair || ''
       const responses = await Promise.all(mapper(apiRequests, urlQueryPair));
-      setData(responses.flat())
+
+      console.log({ RESP: responses.flat().filter(x => !!x), calls: apiRequests });
+      setData(responses.flat().filter(x => !!x))
     }
 
     if (isModalOpen) {
@@ -146,6 +149,11 @@ const Home:React.FC = () => {
     // table that will show the data
   }
 
+  const onOpenDetailsBtnClick = () => {
+    dispatch(setMarket(''))
+    onModalToggle(true)
+  }
+
   return (
     <div className={classes.wrapper}>
       <div className={classes.title}>Crypto Exchange App</div>
@@ -154,7 +162,18 @@ const Home:React.FC = () => {
 
       <div style={{ marginTop: 40 }} />
 
-      { isLoading ? <UILoader /> : <UITable rows={assets} onRowClick={onRowClick} /> }
+      
+
+      { isLoading ? <UILoader /> : (
+        <>
+          <UITable rows={assets} onRowClick={onRowClick} />
+
+          { assets && assets.length > 0 && (
+            <UIButton onClickHandler={onOpenDetailsBtnClick} label='Show historical information' />
+          )}
+          
+        </>
+      ) }
 
       <UIModal isOpen={isModalOpen} onClose={onModalToggle}>
         <UITable rows={assets} onRowClick={onRowClick} />

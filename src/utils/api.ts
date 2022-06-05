@@ -47,7 +47,8 @@ export const binanceApi = {
             id: uuidv4(),
             price: formatPrice(el.price, 2),
             pair: pair,
-            dateTime: new Date(el.time)
+            dateTime: new Date(el.time),
+            exchange: 'BINANCE'
           });
           return acc;
         }, [])
@@ -103,7 +104,8 @@ export const bitfinexApi = {
             id: el[0],
             price: formatPrice(el[3], 2),
             pair: pair,
-            dateTime: new Date(el[1])
+            dateTime: new Date(el[1]),
+            exchange: 'BITFINEX'
           });
           return acc;
         }, [])
@@ -169,7 +171,8 @@ export const krakenApi = {
               id: uuidv4(),
               price: formatPrice(el[0], 2),
               pair: pair,
-              dateTime: new Date(dateTime * 1000)
+              dateTime: new Date(dateTime * 1000),
+              exchange: 'KRAKEN'
             })
             return acc;
           }, [])
@@ -230,7 +233,8 @@ export const huobiApi = {
             id: data.id,
             price: formatPrice(data.price, 2),
             pair: pair,
-            dateTime: new Date(data.ts) //data.ts
+            dateTime: new Date(data.ts), //data.ts
+            exchange: 'HoubiGlobal'
           });
           return acc;
         }, [])

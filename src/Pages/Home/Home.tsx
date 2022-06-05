@@ -4,7 +4,7 @@ import { useDispatch, useSelector, shallowEqual } from "react-redux"
 import { useParams, useLocation } from 'react-router-dom';
 
 import classes from './Home.module.css';
-import { UITable, UISearch, UILoader, UIModal, UIButton } from '../../components';
+import { UITable, UISearch, UILoader, UIModal, UIButton, UITableDetails } from '../../components';
 import { setAssets, setMarket, setPair } from '../../store/actionCreators';
 import { useNavigate } from 'react-router-dom';
 import { binanceApi, bitfinexApi, krakenApi, huobiApi } from '../../utils/api';
@@ -176,7 +176,7 @@ const Home:React.FC = () => {
       ) }
 
       <UIModal isOpen={isModalOpen} onClose={onModalToggle}>
-        <UITable rows={assets} onRowClick={onRowClick} />
+        { data && data.length > 0 && (<UITableDetails rows={data} />) }
       </UIModal>
 
     </div>

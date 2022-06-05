@@ -10,6 +10,4 @@ const Asset: React.FC = (): JSX.Element => (
   </>
 );
 
-// TODO: isLoading
-
 export default Asset;

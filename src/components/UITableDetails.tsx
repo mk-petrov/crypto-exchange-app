@@ -16,16 +16,9 @@ interface Column {
   format?: (value: Date) => string;
 }
 
-// amount: "0.00542000"
-// dateTime: Sun Jun 05 2022 11:50:17 GMT+0300 (Eastern European Summer Time) {}
-// direction: "buy"
-// id: "3b88e49c-7cc7-47c8-8a8b-ca78b3a15dc3"
-// pair: "btc/usd"
-// price: "29713.55"
-
 const columns: readonly Column[] = [
-  { id: 'direction', label: 'ORDER', minWidth: 70 }, // align: 'left'
-  { id: 'pair', label: 'PAIR', minWidth: 70 },
+  { id: 'direction', label: 'ORDER', minWidth: 100 }, // align: 'left'
+  { id: 'pair', label: 'PAIR', minWidth: 100 },
   { id: 'amount', label: 'AMOUNT', minWidth: 150 },
   { id: 'price', label: 'PRICE', minWidth: 150 },
   { id: 'dateTime', label: 'DATE TIME', minWidth: 150, }, // format: (v: Date) => v.toISOString()
@@ -67,7 +60,7 @@ const UITableDetails: React.FC<IProps> = ({ rows }) => {
         <Table stickyHeader aria-label="sticky table">
           <TableHead sx={{
             "& th": {
-              color: "#fff", // "rgba(96, 96, 96)",
+              color: "#fff",
               backgroundColor: "rgba(246,161,12,0.8)"
             }
           }}>
@@ -90,13 +83,28 @@ const UITableDetails: React.FC<IProps> = ({ rows }) => {
                 return (
                   <TableRow hover role="checkbox" tabIndex={-1} key={row.id}>
                     {columns.map((column) => {
-                      const value = row[column.id];
+
+                      let value;
+
+                      switch (column.id) {
+                        case 'pair':
+                          value = (row[column.id]).toLocaleUpperCase().toString()
+                          break;
+                        case 'dateTime':
+                          value = (row[column.id]).toLocaleTimeString()
+                          break;
+                        case 'direction':
+                          const marketDirection = (row[column.id]).toLocaleUpperCase().toString();
+                          value = ( <span style={{ display: 'inline-block', backgroundColor: 'BUY' === marketDirection ? '#01A781' : '#E44B44', padding: '6px', borderRadius: 4, width: 40, textAlign: 'center' }}> { marketDirection } </span> )
+                          break;
+                      
+                        default:
+                          value = (row[column.id]).toString();
+                          break;
+                      }
                       return (
                         <TableCell key={column.id} align={column.align}>
-                          {value.toString()}
-                          {/* {column.format && typeof value === 'object'
-                            ? column.format(value)
-                            : value} */}
+                          {value}
                         </TableCell>
                       );
                     })}

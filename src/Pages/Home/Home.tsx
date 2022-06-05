@@ -105,7 +105,6 @@ const Home:React.FC = () => {
       const urlQueryPair = urlPair || ''
       const responses = await Promise.all(mapper(apiRequests, urlQueryPair));
 
-      console.log({ RESP: responses.flat().filter(x => !!x), calls: apiRequests });
       setData(responses.flat().filter(x => !!x))
     }
 

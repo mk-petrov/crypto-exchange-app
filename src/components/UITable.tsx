@@ -148,10 +148,19 @@ const EnhancedTable:React.FC<IProps> = ({ rows, onRowClick }) => {
 
     return (
         <Box sx={{ width: '100%' }}>
-        <Paper sx={{ width: '100%', mb: 2, backgroundColor: "rgba(246,161,12,0.8)", color: '#fff' }}>
-            <TableContainer>
+            {/*  backgroundColor: "rgba(246,161,12,0.8)" */}
+        <Paper sx={{ width: '100%', mb: 2, backgroundColor: "transparent", color: '#fff' }}>
+            <TableContainer sx={{ borderRadius: 1 }}>
             <Table
-                sx={{ width: 500, minWidth: 250, padding: 40 }}
+                sx={{
+                    maxWidth: 500,
+                    minWidth: 250,
+                    padding: 40,
+                    "& th": {
+                        color: "#fff",
+                        backgroundColor: "rgba(246,161,12,0.8)",
+                    } 
+                }}
                 aria-labelledby="tableTitle"
                 size="medium"
             >
